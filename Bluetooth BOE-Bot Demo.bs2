@@ -40,6 +40,7 @@ Refresh         CON     20              ' Servo Refresh
 ' -----[ Variables ]-------------------------------------------------------
 
 direction       VAR     Byte            ' Direction Command
+response        VAR     Byte(10)
 
 
 ' -----[ Initialization ]--------------------------------------------------
@@ -51,10 +52,12 @@ direction       VAR     Byte            ' Direction Command
 ' -----[ Program Code ]----------------------------------------------------
 
 Main:
+  
   DO
 
     SERIN BT_RX, Baud, [direction]
 
+    DEBUG response
     SELECT direction
       CASE = "w"
         GOSUB Go_Forward
