@@ -1,0 +1,81 @@
+' -----[ I/O Definitions ]-------------------------------------------------
+
+BT_RX           PIN     0               ' RN-42 TX Pin
+Servo_R         PIN     12              ' Right Servo
+Servo_L         PIN     13              ' Left Servo
+
+
+' -----[ Constants ]-------------------------------------------------------
+
+Baud            CON     84              ' 9600 bps
+Refresh         CON     20              ' Servo Refresh
+
+
+' -----[ Variables ]-------------------------------------------------------
+
+direction       VAR     Byte            ' Direction Command
+
+
+
+' -----[ Initialization ]--------------------------------------------------
+
+  LOW Servo_R                           ' Initialize Servo Pins
+  LOW Servo_L
+
+
+' -----[ Program Code ]----------------------------------------------------
+
+Main:
+  
+  DO
+
+    SERIN BT_RX, Baud, [direction]
+
+    SELECT direction
+      CASE = "w"
+        GOSUB Go_Forward
+      CASE = "s"
+        GOSUB Go_Backward
+      CASE = "a"
+        GOSUB Go_Left
+      CASE = "d"
+        GOSUB Go_Right
+      CASE = "x"
+        GOSUB Stop
+    ENDSELECT
+
+  LOOP
+
+
+' -----[ Subroutines ]-----------------------------------------------------
+
+Go_Forward:
+  pulseLeft = 850: pulseRight = 650: pulseCount = 64: GOSUB Navigate
+  RETURN
+
+Go_Backward:
+  pulseLeft = 650: pulseRight = 850: pulseCount = 64: GOSUB Navigate
+  RETURN
+
+Go_Left:
+  pulseLeft = 725: pulseRight = 725: pulseCount = 24: GOSUB Navigate
+  RETURN
+
+Go_Right:
+  pulseLeft = 775: pulseRight = 775: pulseCount = 24: GOSUB Navigate
+  RETURN
+
+Stop:
+  pulseLeft = 0: pulseRight = 0: pulseCount = 0: GOSUB Navigate
+
+Navigate:
+  FOR counter = 1 TO pulseCount
+    PULSOUT 13, pulseLeft
+    PULSOUT 12, pulseRight
+    PAUSE Refresh
+  NEXT
+  PAUSE 200
+  RETURN
+ 
+ 
+ 
